@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          gh release create "$TAG" --title "$TAG" --generate-notes
+
+      - name: Update Homebrew formula
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+
+          curl -sL "https://github.com/silee-tools/appback/archive/refs/tags/${TAG}.tar.gz" -o source.tar.gz
+          SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
+
+          git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/silee-tools/homebrew-tap.git tap
+
+          sed -i "s|url \"https://github.com/silee-tools/appback/archive/refs/tags/.*\"|url \"https://github.com/silee-tools/appback/archive/refs/tags/${TAG}.tar.gz\"|" tap/Formula/appback.rb
+          sed -i "s|sha256 \".*\"|sha256 \"${SHA256}\"|" tap/Formula/appback.rb
+
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/appback.rb
+          git diff --cached --quiet || { git commit -m "appback: update to ${TAG}" && git push; }
