@@ -404,9 +404,10 @@ appback v${VERSION} — Mac 앱 설정 백업/복원
   appback <command> [options]
 
 명령:
-  export [<app>]    앱 설정을 백업 파일로 내보내기
-  import [<app>]    백업 파일에서 앱 설정 복원
-  list              지원하는 앱 목록 표시
+  export [<app>]        앱 설정을 백업 파일로 내보내기
+  import [<app>]        백업 파일에서 앱 설정 복원
+  list                  지원하는 앱 목록 표시
+  install-completions   셸 자동완성 설치 (bash/zsh)
 
 옵션:
   --output <dir>    백업 파일 저장 경로 (기본: ~/Downloads)
@@ -414,10 +415,7 @@ appback v${VERSION} — Mac 앱 설정 백업/복원
   --non-interactive 비인터랙티브 모드 (gum UI 없이 실행)
   --help            도움말 표시
   --version         버전 표시
-  --completions     bash 자동완성 스크립트 출력
-
-자동완성 설치:
-  eval "\$(appback --completions)"
+  --completions     자동완성 스크립트 출력
 EOF
 }
 
@@ -426,11 +424,46 @@ cmd_version() {
 }
 
 cmd_completions() {
-  local comp_file="$SCRIPT_DIR/completions/appback.bash"
-  if [[ ! -f "$comp_file" ]]; then
-    comp_file="$SCRIPT_DIR/../share/appback/completions/appback.bash"
-  fi
+  local shell_name comp_file
+  shell_name="$(basename "$SHELL")"
+
+  case "$shell_name" in
+    zsh)
+      comp_file="$SCRIPT_DIR/completions/_appback"
+      if [[ ! -f "$comp_file" ]]; then
+        comp_file="$SCRIPT_DIR/../share/appback/completions/_appback"
+      fi
+      ;;
+    *)
+      comp_file="$SCRIPT_DIR/completions/appback.bash"
+      if [[ ! -f "$comp_file" ]]; then
+        comp_file="$SCRIPT_DIR/../share/appback/completions/appback.bash"
+      fi
+      ;;
+  esac
+
   cat "$comp_file"
+}
+
+cmd_install_completions() {
+  local shell_name
+  shell_name="$(basename "$SHELL")"
+  local line='eval "$(appback --completions)"'
+
+  case "$shell_name" in
+    bash) local rc="$HOME/.bashrc" ;;
+    zsh)  local rc="$HOME/.zshrc" ;;
+    *)    die "지원하지 않는 셸: $shell_name (bash, zsh만 지원)" ;;
+  esac
+
+  if grep -qF 'appback --completions' "$rc" 2>/dev/null; then
+    info "이미 설치되어 있습니다: $rc"
+    return 0
+  fi
+
+  printf '\n# appback completions\n%s\n' "$line" >> "$rc"
+  success "자동완성 설치 완료: $rc"
+  info "적용하려면: source $rc"
 }
 
 # === Main ===
@@ -440,6 +473,7 @@ main() {
     export)  shift; cmd_export "$@" ;;
     import)  shift; cmd_import "$@" ;;
     list)    list_apps ;;
+    install-completions) cmd_install_completions ;;
     --help|-h)       cmd_help ;;
     --version|-v)    cmd_version ;;
     --completions)   cmd_completions ;;
