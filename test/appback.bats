@@ -38,6 +38,26 @@ load helpers/setup
   [[ "$output" =~ [0-9]+\.[0-9]+\.[0-9]+ ]]
 }
 
+@test "version is 0.2.1" {
+  run "$APPBACK_BIN" --version
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"0.2.1"* ]]
+}
+
+# === completions ===
+
+@test "--completions outputs completion script" {
+  run "$APPBACK_BIN" --completions
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"appback"* ]]
+}
+
+@test "install-completions is listed in help" {
+  run "$APPBACK_BIN" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"install-completions"* ]]
+}
+
 # === export ===
 
 @test "export creates backup archive" {
