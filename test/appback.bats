@@ -38,10 +38,10 @@ load helpers/setup
   [[ "$output" =~ [0-9]+\.[0-9]+\.[0-9]+ ]]
 }
 
-@test "version is 0.2.2" {
+@test "version is 0.2.3" {
   run "$APPBACK_BIN" --version
   [ "$status" -eq 0 ]
-  [[ "$output" == *"0.2.2"* ]]
+  [[ "$output" == *"0.2.3"* ]]
 }
 
 # === completions ===
