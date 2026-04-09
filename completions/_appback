@@ -38,4 +38,5 @@ _appback() {
   esac
 }
 
-_appback "$@"
+# eval/source 시 compdef로 등록 (fpath에서는 #compdef 헤더가 처리)
+compdef _appback appback

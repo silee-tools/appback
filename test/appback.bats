@@ -52,6 +52,16 @@ load helpers/setup
   [[ "$output" == *"appback"* ]]
 }
 
+@test "zsh completion uses compdef instead of direct call" {
+  local comp_file="$BATS_TEST_DIRNAME/../completions/_appback"
+  # _appback "$@" 직접 호출이 없어야 함 (eval 시 에러 발생 원인)
+  run grep -c '^_appback "\$@"' "$comp_file"
+  [ "$output" = "0" ]
+  # compdef로 등록해야 함
+  run grep -c 'compdef _appback appback' "$comp_file"
+  [ "$output" != "0" ]
+}
+
 @test "install-completions is listed in help" {
   run "$APPBACK_BIN" --help
   [ "$status" -eq 0 ]

@@ -21,7 +21,7 @@ has_gum() {
 
 info() {
   if has_gum; then
-    gum style --foreground 212 "$1"
+    gum style --foreground 248 "$1"
   else
     echo "$1"
   fi
