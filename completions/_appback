@@ -23,17 +23,28 @@ _appback() {
     apps=(${(f)"$(ls "$apps_dir"/*.sh 2>/dev/null | xargs -I{} basename {} .sh)"})
   fi
 
-  case "$words[2]" in
-    export|import)
-      _arguments \
-        '1:app:($apps)' \
-        '--output[백업 파일 저장 경로]:dir:_directories' \
-        '--no-keychain[키체인 항목 건너뛰기]' \
-        '--non-interactive[비인터랙티브 모드]' \
-        '--help[도움말 표시]'
-      ;;
-    *)
+  _arguments -C \
+    '--help[도움말 표시]' \
+    '--version[버전 표시]' \
+    '--completions[자동완성 스크립트 출력]' \
+    '1:command:->command' \
+    '*::arg:->args'
+
+  case $state in
+    command)
       _describe 'command' commands
+      ;;
+    args)
+      case $words[1] in
+        export|import)
+          _arguments \
+            '1:app:($apps)' \
+            '--output[백업 파일 저장 경로]:dir:_directories' \
+            '--no-keychain[키체인 항목 건너뛰기]' \
+            '--non-interactive[비인터랙티브 모드]' \
+            '--help[도움말 표시]'
+          ;;
+      esac
       ;;
   esac
 }

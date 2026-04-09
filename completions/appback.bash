@@ -3,9 +3,10 @@
 # shellcheck disable=SC2207,SC2012
 
 _appback() {
-  local cur prev commands apps
+  local cur prev subcmd commands apps
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
+  subcmd="${COMP_WORDS[1]}"
   commands="export import list install-completions"
 
   # appback이 있는 디렉토리에서 apps/ 목록 로드
@@ -18,15 +19,18 @@ _appback() {
   fi
   apps=$(ls "$apps_dir/" 2>/dev/null | sed 's/\.sh$//')
 
-  case "$prev" in
-    appback)
-      COMPREPLY=($(compgen -W "$commands --help --version --completions" -- "$cur"))
-      ;;
+  # --output 다음은 디렉토리 완성
+  if [[ "$prev" == "--output" ]]; then
+    COMPREPLY=($(compgen -d -- "$cur"))
+    return
+  fi
+
+  case "$subcmd" in
     export|import)
       COMPREPLY=($(compgen -W "$apps --output --no-keychain --non-interactive --help" -- "$cur"))
       ;;
-    --output)
-      COMPREPLY=($(compgen -d -- "$cur"))
+    *)
+      COMPREPLY=($(compgen -W "$commands --help --version --completions" -- "$cur"))
       ;;
   esac
 }

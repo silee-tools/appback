@@ -62,6 +62,23 @@ load helpers/setup
   [ "$output" != "0" ]
 }
 
+@test "zsh completion uses state-based subcommand handling" {
+  local comp_file="$BATS_TEST_DIRNAME/../completions/_appback"
+  # _arguments -C 사용 (subcommand 컨텍스트 전환)
+  run grep -c '_arguments -C' "$comp_file"
+  [ "$output" != "0" ]
+  # state 기반 분기
+  run grep -c 'case \$state' "$comp_file"
+  [ "$output" != "0" ]
+}
+
+@test "bash completion uses subcmd for subcommand detection" {
+  local comp_file="$BATS_TEST_DIRNAME/../completions/appback.bash"
+  # COMP_WORDS[1]로 subcommand 판단
+  run grep -c 'COMP_WORDS\[1\]' "$comp_file"
+  [ "$output" != "0" ]
+}
+
 @test "install-completions is listed in help" {
   run "$APPBACK_BIN" --help
   [ "$status" -eq 0 ]

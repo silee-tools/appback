@@ -29,7 +29,7 @@ info() {
 
 success() {
   if has_gum; then
-    gum style --foreground 82 "✓ $1"
+    gum style --foreground 114 "✓ $1"
   else
     echo "✓ $1"
   fi
@@ -37,7 +37,7 @@ success() {
 
 warn() {
   if has_gum; then
-    gum style --foreground 214 "⚠ $1"
+    gum style --foreground 178 "⚠ $1"
   else
     echo "⚠ $1" >&2
   fi
@@ -45,7 +45,7 @@ warn() {
 
 error() {
   if has_gum; then
-    gum style --foreground 196 "✗ $1"
+    gum style --foreground 167 "✗ $1"
   else
     echo "✗ $1" >&2
   fi
@@ -262,7 +262,7 @@ cmd_export() {
   size=$(du -h "$backup_file" | awk '{print $1}')
 
   if has_gum && [[ "${NON_INTERACTIVE:-}" != "1" ]]; then
-    gum style --border double --padding "1 2" --border-foreground 82 \
+    gum style --border double --padding "1 2" --border-foreground 114 \
       "백업 완료!" \
       "" \
       "파일: $backup_file" \
@@ -384,7 +384,7 @@ cmd_import() {
   rm -rf "$tmp_dir"
 
   if has_gum && [[ "${NON_INTERACTIVE:-}" != "1" ]]; then
-    gum style --border double --padding "1 2" --border-foreground 82 \
+    gum style --border double --padding "1 2" --border-foreground 114 \
       "복원 완료!" \
       "" \
       "${APP_NAME} 설정이 복원되었습니다." \
