@@ -19,7 +19,7 @@ Backup and restore macOS application settings, preferences, and keychain items w
 brew install gum
 
 # Clone and use
-git clone https://github.com/silee9019/appback.git
+git clone https://github.com/silee-tools/appback.git
 cd appback
 ./appback --help
 ```

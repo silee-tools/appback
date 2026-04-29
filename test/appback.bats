@@ -104,6 +104,20 @@ load helpers/setup
   [ "$status" -ne 0 ]
 }
 
+@test "export reports missing --output value" {
+  run "$APPBACK_BIN" export dia --output
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"--output"* ]]
+  [[ "$output" == *"값이 필요합니다"* ]]
+}
+
+@test "export does not consume next option as --output value" {
+  run "$APPBACK_BIN" export dia --output --non-interactive
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"--output"* ]]
+  [[ "$output" == *"값이 필요합니다"* ]]
+}
+
 # === import ===
 
 @test "import fails for missing backup file" {

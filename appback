@@ -56,6 +56,15 @@ die() {
   exit 1
 }
 
+require_option_value() {
+  local option="$1"
+  local value="${2:-}"
+
+  if [[ -z "$value" || "$value" == --* ]]; then
+    die "옵션 ${option}에는 값이 필요합니다"
+  fi
+}
+
 spin() {
   local title="$1"
   shift
@@ -135,7 +144,11 @@ cmd_export() {
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --output) output_dir="$2"; shift 2 ;;
+      --output)
+        require_option_value "$1" "${2:-}"
+        output_dir="$2"
+        shift 2
+        ;;
       --no-keychain) no_keychain=1; shift ;;
       --non-interactive) non_interactive=1; shift ;;
       --help) cmd_help; exit 0 ;;

@@ -19,7 +19,7 @@ macOS 앱의 설정, 환경설정, 키체인 항목을 [gum](https://github.com/
 brew install gum
 
 # 클론 및 사용
-git clone https://github.com/silee9019/appback.git
+git clone https://github.com/silee-tools/appback.git
 cd appback
 ./appback --help
 ```
