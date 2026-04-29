@@ -30,7 +30,12 @@ jobs:
           curl -sL "https://github.com/silee-tools/appback/archive/refs/tags/${TAG}.tar.gz" -o source.tar.gz
           SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
 
-          git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/silee-tools/homebrew-tap.git tap
+          if [[ -z "${HOMEBREW_TAP_TOKEN:-}" ]]; then
+            echo "HOMEBREW_TAP_TOKEN is required to update the Homebrew tap" >&2
+            exit 1
+          fi
+
+          git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/silee-tools/homebrew-tap.git" tap
 
           sed -i "s|url \"https://github.com/silee-tools/appback/archive/refs/tags/.*\"|url \"https://github.com/silee-tools/appback/archive/refs/tags/${TAG}.tar.gz\"|" tap/Formula/appback.rb
           sed -i "s|sha256 \".*\"|sha256 \"${SHA256}\"|" tap/Formula/appback.rb
