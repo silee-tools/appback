@@ -187,6 +187,7 @@ cmd_export() {
   local backup_file="${output_dir}/${backup_name}.tar.gz"
   local tmp_dir
   tmp_dir="$(mktemp -d)"
+  trap 'rm -rf "$tmp_dir"' EXIT
 
   # 설정 파일 백업
   local tar_args=()
@@ -270,6 +271,7 @@ cmd_export() {
     tar czf "$backup_file" -C "$tmp_dir" .
 
   rm -rf "$tmp_dir"
+  trap - EXIT
 
   local size
   size=$(du -h "$backup_file" | awk '{print $1}')
@@ -343,6 +345,7 @@ cmd_import() {
 
   local tmp_dir
   tmp_dir="$(mktemp -d)"
+  trap 'rm -rf "$tmp_dir"' EXIT
 
   # 아카이브 해제
   spin "아카이브 해제 중..." \
@@ -395,6 +398,7 @@ cmd_import() {
   fi
 
   rm -rf "$tmp_dir"
+  trap - EXIT
 
   if has_gum && [[ "${NON_INTERACTIVE:-}" != "1" ]]; then
     gum style --border double --padding "1 2" --border-foreground 114 \
