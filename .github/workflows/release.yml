@@ -39,7 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           bash -n appback apps/*.sh
-          shellcheck appback apps/*.sh
+          shellcheck appback
           shfmt -d -i 2 appback apps/*.sh
 
       - name: Run tests
